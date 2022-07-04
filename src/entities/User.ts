@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { FinantialLedger } from './FinantialLedger';
+import { Token } from './Token';
 
 @Index('id', ['id'], {})
 @Entity({ schema: 'payhere', name: 'users' })
@@ -30,4 +31,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => FinantialLedger, (finantialledgers) => finantialledgers.id)
   finantialLedgerList: FinantialLedger[];
+
+  @OneToMany(() => Token, (token) => token.id)
+  tokenList: Token[];
 }

@@ -2,7 +2,6 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   Index,
   ManyToOne,
@@ -12,9 +11,8 @@ import {
 import { User } from './User';
 
 @Index('id', ['id'], {})
-@Index('user', ['user'], {})
-@Entity({ schema: 'payhere', name: 'finantialledgers' })
-export class FinantialLedger extends BaseEntity {
+@Entity({ schema: 'payhere', name: 'tokens' })
+export class Token extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
@@ -22,26 +20,20 @@ export class FinantialLedger extends BaseEntity {
     nullable: false,
     onDelete: 'CASCADE',
   })
-  user!: User;
+  user: User;
 
-  @Column()
-  expenditure: number;
+  @Column({ length: 600 })
+  token: string;
 
-  @Column()
-  income: number;
-
-  @Column()
-  date: Date;
-
-  @Column({ length: 4000 })
-  remarks: string;
+  @Column({ length: 1000 })
+  userAgent: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt: Date;
-
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column()
+  expiredAt: Date;
 }
