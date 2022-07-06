@@ -1,8 +1,8 @@
 name: CI
 
 on:
-  pull_request:
-    branches: [ "master" ]
+  push:
+    branches: ['develop']
 
 jobs:
   build:
@@ -19,17 +19,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - name: Cache
         uses: actions/cache@v3
         id: cache
         with:
           path: node_modules
           key: npm-packages-${{ hashFiles('**/package-lock.json') }}
-        
+
       - name: install dependency
         if: steps.cache.output.cache-hit != true
         run: npm install
-        
+
       - run: npm ci
       - run: npm test
