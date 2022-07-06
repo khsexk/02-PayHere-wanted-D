@@ -6,5 +6,5 @@ files:
     overwrite: yes
 hooks:
   ApplicationStart:
-    - location: ./deploy.sh
+    - location: payhere/deploy.sh
       runas: ubuntu
