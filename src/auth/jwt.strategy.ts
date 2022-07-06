@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
+      ignoreExpiration: false, // Token 만료 시, 401 Unauthorized 를 던지게 되어 있음.
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
     });
   }
@@ -25,7 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    *  Custom Decorator 필요 -> UserId를 통해서 User반환해줄 수 있는 User() 데코레이터
    */
   async validate(payload: any) {
-    console.log(payload.id);
     //payload의 id를 통해 user객체를 가져온다.
     const user: User = await this.userRepository.findOneBy({
       id: payload.id,

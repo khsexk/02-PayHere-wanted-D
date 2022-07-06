@@ -1,12 +1,14 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { Token } from 'src/entities/Token';
 import { User } from 'src/entities/User';
 import { Repository } from 'typeorm';
@@ -71,6 +73,19 @@ export class AuthService {
   }
 
   /**
+   *  AccessToken 만료시 Refresh Token 비교 후 새롭게 반환
+   */
+  async refreshToken(refreshToken: string, userId: number, userAgent: string) {
+    const token = await this.getTokenEntity(userId, userAgent);
+    if (!token) throw new UnauthorizedException();
+
+    const isMatch = await compare(refreshToken, token.token);
+    if (!isMatch) throw new ForbiddenException('Access Denied');
+
+    return await this.getJwtAccessToken(userId, userAgent);
+  }
+
+  /**
    * Token Entity에 유저에 따른 Token을 저장하기 위한 함수
    */
   async setCurrentRefreshToken(
@@ -82,7 +97,6 @@ export class AuthService {
     const currentHashedRefreshToken = await hash(refreshToken, 10); // bcrypt의 hash 를 이용하여 암호화하여 저장
     const user = await this.userRepository.findOne({ where: { id: userId } }); // userId로 user 가져오기
     if (!user) {
-      HttpStatus;
       throw new HttpException('Not Exists userId', HttpStatus.NOT_FOUND);
     }
 
@@ -103,7 +117,10 @@ export class AuthService {
             token: currentHashedRefreshToken,
             userAgent: userAgent,
             user: user,
-            expiredAt: this.addDays(new Date(), 14),
+            expiredAt: this.addDays(
+              new Date(),
+              parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME),
+            ),
           },
         ])
         .execute();
@@ -117,18 +134,10 @@ export class AuthService {
   async removeRefreshToken(userId: number, userAgent: string) {
     const token = await this.getTokenEntity(userId, userAgent);
     if (token) {
-      console.log(token);
       await this.tokenRepository.delete(token.id);
     } else {
       throw new NotFoundException();
     }
-  }
-  /**
-   * 만료일자 14일 더해주는 함수
-   */
-  addDays(date: Date, days: number): Date {
-    date.setDate(date.getDate() + days);
-    return date;
   }
 
   /**
@@ -145,10 +154,17 @@ export class AuthService {
       if (token.userAgent === userAgent && token.user.id === userId) {
         tokenEntity = token;
         delete tokenEntity.user;
-        return;
       }
     });
 
     return tokenEntity;
+  }
+
+  /**
+   * 만료일자 14일 더해주는 함수
+   */
+  addDays(date: Date, days: number): Date {
+    date.setDate(date.getDate() + days);
+    return date;
   }
 }
