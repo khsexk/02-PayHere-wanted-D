@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { User } from 'src/entities/User';
+import { Repository } from 'typeorm';
 
 /**
  * API End Point에 대해 Token이 유요한지 확인하는 class
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,6 +26,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    */
   async validate(payload: any) {
     console.log(payload.id);
-    return { userId: payload.userId };
+    //payload의 id를 통해 user객체를 가져온다.
+    const user: User = await this.userRepository.findOneBy({
+      id: payload.id,
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
   }
 }
