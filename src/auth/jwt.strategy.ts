@@ -15,7 +15,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   *  Custom Decorator 필요 -> UserId를 통해서 User반환해줄 수 있는 User() 데코레이터
+   */
   async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
+    console.log(payload.id);
+    return { userId: payload.userId };
   }
 }

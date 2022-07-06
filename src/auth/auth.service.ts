@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
 import { Token } from 'src/entities/Token';
+import { User } from 'src/entities/User';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,6 +13,9 @@ export class AuthService {
 
     @InjectRepository(Token) // tokenRepository 가져오기
     private tokenRepository: Repository<Token>,
+
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   /**
@@ -22,7 +26,7 @@ export class AuthService {
     const payload = { id: userId, agent: userAgent };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-      expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}s`,
+      expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}h`,
     });
     return {
       accessToken: accessToken,
@@ -40,7 +44,7 @@ export class AuthService {
     const payload = { id: userId, agent: userAgent };
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_TOKEN_SECRET,
-      expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}s`,
+      expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}d`,
     });
 
     // Database에 저장
@@ -59,10 +63,30 @@ export class AuthService {
   ) {
     // DB에 토큰 값 저장
     const currentHashedRefreshToken = await hash(refreshToken, 10); // bcrypt의 hash 를 이용하여 암호화하여 저장
-    await this.tokenRepository.save({
-      userId,
-      currentHashedRefreshToken,
-      userAgent,
-    });
+    const user = await this.userRepository.findOne({ where: { id: userId } }); // userId로 user 가져오기
+    if (!user) {
+      HttpStatus;
+      throw new HttpException('Not Exists userId', HttpStatus.NOT_FOUND);
+    }
+    Logger.verbose('user', JSON.stringify(user));
+
+    await this.tokenRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Token)
+      .values([
+        {
+          token: currentHashedRefreshToken,
+          userAgent: userAgent,
+          user: user,
+          expiredAt: this.addDays(new Date(), 14),
+        },
+      ])
+      .execute();
+  }
+
+  addDays(date: Date, days: number): Date {
+    date.setDate(date.getDate() + days);
+    return date;
   }
 }
