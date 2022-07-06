@@ -1,0 +1,10 @@
+version: 0.0
+os: ubuntu
+files:
+  - source: /
+    destination: /home/ubuntu/payhere
+    overwrite: yes
+hooks:
+  ApplicationStart:
+    - location: ./deploy.sh
+      runas: ubuntu
