@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ['master']
 
   workflow_dispatch:
 
@@ -16,7 +16,7 @@ jobs:
 
       - name: make artifacts dir
         run: mkdir ./artifacts/
-      
+
       - name: create .env
         run: |
           touch .env
@@ -24,20 +24,24 @@ jobs:
           echo DB_USERNAME=${{ secrets.DB_USERNAME }} >> .env
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
           echo DB_DATABASE=${{ secrets.DB_DATABASE }} >> .env
+          echo JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} >> .env
+          echo JWT_ACCESS_TOKEN_EXPIRATION_TIME=${{ secrets.JWT_ACCESS_TOKEN_EXPIRATION_TIME }} >> .env
+          echo JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} >> .env
+          JWT_REFRESH_TOKEN_EXPIRATION_TIME=${{ secrets.JWT_REFRESH_TOKEN_EXPIRATION_TIME }} >> .env
           cat .env
-      
+
       - name: zip artifacts
         run: zip -r ./artifacts/build.zip ./
 
       - name: configure aws
         uses: aws-actions/configure-aws-credentials@v1
-        with: 
+        with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-          
+
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./artifacts/build.zip s3://payhere-wanted-d/deploy/build.zip
-        
+
       - name: codedeploy
         run: aws deploy create-deployment --application-name payhere-nestjs --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name payhere-wanted-d --s3-location bucket=payhere-wanted-d,bundleType=zip,key=deploy/build.zip
