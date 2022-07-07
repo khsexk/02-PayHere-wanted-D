@@ -48,7 +48,7 @@ jobs:
 
       - name: codedeploy
         run: aws deploy create-deployment 
-          --application-name payhere-nestjs 
+          --application-name wanted-payhere 
           --deployment-config-name CodeDeployDefault.OneAtATime 
-          --deployment-group-name payhere-wanted-d 
+          --deployment-group-name payhere 
           --s3-location bucket=payhere-wanted-d,bundleType=zip,key=deploy/build.zip
