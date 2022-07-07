@@ -9,8 +9,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcrypt';
-import { Token } from 'src/entities/Token';
-import { User } from 'src/entities/User';
+import { Token } from '../entities/Token';
+import { User } from '../entities/User';
 import { Repository } from 'typeorm';
 
 @Injectable()
