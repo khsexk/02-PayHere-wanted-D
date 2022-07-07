@@ -41,7 +41,14 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./artifacts/build.zip s3://payhere-wanted-d/deploy/build.zip
+        run: aws s3 cp
+          --region ap-northeast-2 
+          ./artifacts/build.zip 
+          s3://payhere-wanted-d/deploy/build.zip
 
       - name: codedeploy
-        run: aws deploy create-deployment --application-name payhere-nestjs --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name payhere-wanted-d --s3-location bucket=payhere-wanted-d,bundleType=zip,key=deploy/build.zip
+        run: aws deploy create-deployment 
+          --application-name payhere-nestjs 
+          --deployment-config-name CodeDeployDefault.OneAtATime 
+          --deployment-group-name payhere-wanted-d 
+          --s3-location bucket=payhere-wanted-d,bundleType=zip,key=deploy/build.zip
