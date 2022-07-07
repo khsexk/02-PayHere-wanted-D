@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -13,7 +12,7 @@ import { Token } from './Token';
 
 @Index('id', ['id'], {})
 @Entity({ schema: 'payhere', name: 'users' })
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 

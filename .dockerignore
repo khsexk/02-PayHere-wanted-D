@@ -1,2 +1,6 @@
 node_modules
 npm-debug.log
+.gitignore
+README.md
+appspec.yml
+deploy.sh
