@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPOSITORY=/home/ec2-user/app/payhere
+REPOSITORY=/home/ec2-user/wanted/payhere
 
 cd $REPOSITORY
 
