@@ -7,8 +7,12 @@ import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 import { SingUpBodyDto } from './dto/request/sign-up-body.dto';
 import { faker } from '@faker-js/faker';
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { LogInBodyDto } from './dto/request/log-in-body.dto';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 
 describe('UsersService', () => {
   let usersService: UsersService;
