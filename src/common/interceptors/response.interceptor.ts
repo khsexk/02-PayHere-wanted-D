@@ -5,9 +5,9 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-
+  
 @Injectable()
-export class FinancialLedgerInterceptor implements NestInterceptor {
+export class ResponseWrapperInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
@@ -15,6 +15,7 @@ export class FinancialLedgerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => ({
         statusCode: context.switchToHttp().getResponse().statusCode,
+        message: 'OK',
         data,
       })),
     );
