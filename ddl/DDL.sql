@@ -20,7 +20,7 @@ CREATE TABLE test.`users` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE test.`finantialledgers` (
+CREATE TABLE test.`financialledgers` (
 	`id` int NOT NULL AUTO_INCREMENT, 
     `expenditure` int NOT NULL, 
     `income` int NOT NULL, 
