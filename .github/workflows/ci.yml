@@ -64,3 +64,9 @@ jobs:
 
       - run: npm ci
       - run: npm test
+        env: 
+          CI: true 
+          MYSQL_DATABASE: payhere
+          DB_USERNAME: root
+          DB_PASSWORD: root
+          DB_PORT: 3307
