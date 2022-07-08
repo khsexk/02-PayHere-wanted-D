@@ -7,21 +7,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      mysql: 
-        image: mysql:8.0.28  
-        env:   
-          MYSQL_USER: 127.0.0.1
-          MYSQL_PASSWORD: test
-          MYSQL_ROOT_PASSWORD: test
-          MYSQL_DATABASE: test
-        ports:
-          - 3307
-        options: >-  
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+#     services:
+#       mysql: 
+#         image: mysql:8.0.28  
+#         env:   
+#           MYSQL_USER: 127.0.0.1
+#           MYSQL_PASSWORD: test
+#           MYSQL_ROOT_PASSWORD: test
+#           MYSQL_DATABASE: test
+#         ports:
+#           - 3307
+#         options: >-  
+#           --health-cmd="mysqladmin ping"
+#           --health-interval=10s
+#           --health-timeout=5s
+#           --health-retries=3
 
     strategy:
       matrix:
@@ -34,13 +34,17 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           
-      - name: verify MySQL connection from host
-        run: |
-          mysql --version
-          sudo apt-get install -y mysql-client
-          sudo service mysql start
-          mysql -uroot -proot -e "CREATE DATABASE test"
-          mysql -uroot -proot -e "SHOW DATABASES"
+#       - uses: actions/checkout@v3
+#       - name: Build the Docker image
+#         run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+          
+#       - name: verify MySQL connection from host
+#         run: |
+#           mysql --version
+#           sudo apt-get install -y mysql-client
+#           sudo service mysql start
+#           mysql -uroot -proot -e "CREATE DATABASE test"
+#           mysql -uroot -proot -e "SHOW DATABASES"
 
       - name: Cache
         uses: actions/cache@v3
@@ -52,21 +56,22 @@ jobs:
       - name: install dependency
         if: steps.cache.output.cache-hit != true
         run: npm install
+          docker-compose -f docker-compose.$npm_config_env-db.yml up -d
       
       - name: create .env
         run: |
-          touch .env
-          echo DB_HOST=127.0.0.1 >> .env
-          echo DB_USERNAME=test >> .env
-          echo DB_PASSWORD=test >> .env
-          echo DB_DATABASE=test >> .env
-          cat .env
+          touch .env.test
+          echo DB_HOST=127.0.0.1 >> .env.test
+          echo DB_USERNAME=test >> .env.test
+          echo DB_PASSWORD=test >> .env.test
+          echo DB_DATABASE=test >> .env.test
+          cat .env.test
 
       - run: npm ci
       - run: npm test
-        env: 
-          CI: true 
-          MYSQL_DATABASE: payhere
-          DB_USERNAME: root
-          DB_PASSWORD: root
-          DB_PORT: 3307
+#         env: 
+#           CI: true 
+#           MYSQL_DATABASE: payhere
+#           DB_USERNAME: root
+#           DB_PASSWORD: root
+#           DB_PORT: 3307
