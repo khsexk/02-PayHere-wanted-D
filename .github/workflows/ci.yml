@@ -33,6 +33,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          
+      - name: verify MySQL connection from host
+        run: |
+          mysql --version
+          sudo apt-get install -y mysql-client
+          sudo service mysql start
+          mysql -uroot -proot -e "CREATE DATABASE payhere"
+          mysql -uroot -proot -e "SHOW DATABASES"
 
       - name: Cache
         uses: actions/cache@v3
@@ -44,6 +52,15 @@ jobs:
       - name: install dependency
         if: steps.cache.output.cache-hit != true
         run: npm install
+      
+      - name: create .env
+        run: |
+          touch .env
+          echo DB_HOST=127.0.0.1 >> .env
+          echo DB_USERNAME=root >> .env
+          echo DB_PASSWORD=root >> .env
+          echo DB_DATABASE=payhere >> .env
+          cat .env
 
       - run: npm ci
       - run: npm test
