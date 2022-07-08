@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -13,12 +12,12 @@ import { User } from './User';
 
 @Index('id', ['id'], {})
 @Index('user', ['user'], {})
-@Entity({ schema: 'payhere', name: 'finantialledgers' })
-export class FinantialLedger extends BaseEntity {
+@Entity({ schema: 'payhere', name: 'financialledgers' })
+export class FinancialLedger {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.id, {
+  @ManyToOne(() => User, (user) => user.financialLedgerList, {
     nullable: false,
     onDelete: 'CASCADE',
   })

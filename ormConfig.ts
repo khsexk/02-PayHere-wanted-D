@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import { FinantialLedger } from 'src/entities/FinantialLedger';
+import { FinancialLedger } from 'src/entities/FinancialLedger';
 import { Token } from 'src/entities/Token';
 import { User } from 'src/entities/User';
 
@@ -12,7 +12,7 @@ const config: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [User, FinantialLedger, Token],
+  entities: [User, FinancialLedger, Token],
   autoLoadEntities: true,
   charset: 'utf8mb4',
   synchronize: false, //첫 시작은 true, 나머지는 계속 false
