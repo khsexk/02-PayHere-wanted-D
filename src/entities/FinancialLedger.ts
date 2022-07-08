@@ -1,7 +1,6 @@
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   Index,
   ManyToOne,
@@ -38,9 +37,35 @@ export class FinancialLedger {
   @CreateDateColumn()
   createdAt: Date;
 
-  @DeleteDateColumn()
+  @Column({ nullable: true })
   deletedAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  update({
+    income,
+    expenditure,
+    remarks,
+  }: {
+    income: number;
+    expenditure: number;
+    remarks: string;
+  }) {
+    this.expenditure = expenditure;
+    this.income = income;
+    this.remarks = remarks;
+  }
+
+  delete() {
+    this.deletedAt = new Date();
+  }
+
+  isDeleted() {
+    return this.deletedAt !== null;
+  }
+
+  restore() {
+    this.deletedAt = null;
+  }
 }

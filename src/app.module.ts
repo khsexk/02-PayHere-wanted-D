@@ -10,9 +10,9 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormConfig),
-    UsersModule,
     AuthModule,
     FinancialLedgerModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [
