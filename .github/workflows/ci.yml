@@ -16,7 +16,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: payhere
         ports:
-          - 3306
+          - 3307
         options: >-  
           --health-cmd="mysqladmin ping"
           --health-interval=10s
