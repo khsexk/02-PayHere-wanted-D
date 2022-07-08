@@ -65,7 +65,8 @@ jobs:
       - name: install dependency
         if: steps.cache.output.cache-hit != true
         run: npm install
-          npm run db:up --env=test
+        
+      - run:  npm run db:up --env=test
 
       - run: npm ci
       - run: npm test
