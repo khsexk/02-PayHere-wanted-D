@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { User } from 'src/entities/User';
 import { DataSource, Repository } from 'typeorm';
 import { FinancialLedger } from '../entities/FinancialLedger';
@@ -57,6 +61,10 @@ export class FinancialLedgerRepository extends Repository<FinancialLedger> {
   async getAllMemo(userId: number) {
     const groupData = await this.findDayGroup(userId);
     const userData = await this.findUserList(userId);
+
+    if (groupData.length === 0 || userData.length === 0) {
+      throw new UnauthorizedException('가계부 접근 권한이 없습니다.');
+    }
 
     return { groupData, userData };
   }

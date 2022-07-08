@@ -1,7 +1,11 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, Not, IsNull } from 'typeorm';
 import { clearDatabase } from '../../../test/utils/clear-database';
 import { TypeOrmTestConfig } from '../../../test/utils/typeorm-test-config';
 import { FinancialLedger } from '../../entities/FinancialLedger';
@@ -12,6 +16,7 @@ import { getUser } from './user.fixture';
 
 describe('FinancialLedgerService', () => {
   let service: FinancialLedgerService;
+  let repository: FinancialLedgerRepository;
   let dataSource: DataSource;
 
   beforeEach(async () => {
@@ -21,6 +26,9 @@ describe('FinancialLedgerService', () => {
     }).compile();
 
     service = module.get<FinancialLedgerService>(FinancialLedgerService);
+    repository = module.get<FinancialLedgerRepository>(
+      FinancialLedgerRepository,
+    );
     dataSource = module.get(DataSource);
   });
 
@@ -147,6 +155,61 @@ describe('FinancialLedgerService', () => {
 
       // then
       await expect(result).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('create', () => {
+    it('글 작성이 잘 되는가', async () => {
+      // Given
+      const user = getUser();
+      const em = dataSource.createEntityManager();
+      await em.save(user);
+
+      // When
+      const result = repository.createMemo(
+        {
+          expenditure: 1000,
+          income: 500,
+          remarks: 'memo',
+          date: new Date('2020-07-07'),
+        },
+        user,
+      );
+
+      // Then
+      await expect(result).resolves.toBeDefined();
+    });
+  });
+
+  describe('readOne', () => {
+    it('본인 글이 아니거나 삭제되거나 없는 가계부를 확인하려할때 NotFoundException 발생하는가', async () => {
+      // Given
+      const user = getUser();
+      const em = dataSource.createEntityManager();
+      await em.save(user);
+
+      try {
+        // When
+        const result = await repository.getOneMemo(1, user.id);
+        // Then
+        expect(result).resolves.toEqual(UnauthorizedException);
+      } catch (e) {}
+    });
+  });
+
+  describe('readList', () => {
+    it('로그인을 하지않고 리스트를 조회할때 UnauthorizedException 발생하는가', async () => {
+      // Given
+      const user = getUser();
+      const em = dataSource.createEntityManager();
+      await em.save(user);
+
+      try {
+        // When
+        const result = await repository.getAllMemo(user.id);
+        // Then
+        expect(result).toThrowError(UnauthorizedException);
+      } catch (e) {}
     });
   });
 });

@@ -31,40 +31,6 @@ export class FinancialLedgerController {
     private readonly financialLedgerService: FinancialLedgerService,
   ) {}
 
-  @Put('/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtAuthGuard)
-  @ApiNoContentResponse()
-  async update(
-    @CurrentUser() user: User,
-    @Param('id', ParseIntPipe) financialLedgerId: number,
-    @Body(new ValidationPipe({ transform: true })) body: UpdateRequestDto,
-  ) {
-    return this.financialLedgerService.update(user, financialLedgerId, body);
-  }
-
-  @Put('/:id/cancellation')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtAuthGuard)
-  @ApiNoContentResponse()
-  async delete(
-    @CurrentUser() user: User,
-    @Param('id', ParseIntPipe) financialLedgerId: number,
-  ) {
-    return this.financialLedgerService.delete(user, financialLedgerId);
-  }
-
-  @Put('/:id/restoration')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtAuthGuard)
-  @ApiNoContentResponse()
-  async restore(
-    @CurrentUser() user: User,
-    @Param('id', ParseIntPipe) financialLedgerId: number,
-  ) {
-    return this.financialLedgerService.restore(user, financialLedgerId);
-  }
-
   //가계부 작성
   @Post()
   @HttpCode(201)
@@ -99,5 +65,39 @@ export class FinancialLedgerController {
   async getOneMemo(@Param('id') id: number, @CurrentUser() user: User) {
     const result = await this.financialLedgerService.getOneMemo(id, user.id);
     return result;
+  }
+
+  @Put('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  @ApiNoContentResponse()
+  async update(
+    @CurrentUser() user: User,
+    @Param('id', ParseIntPipe) financialLedgerId: number,
+    @Body(new ValidationPipe({ transform: true })) body: UpdateRequestDto,
+  ) {
+    return this.financialLedgerService.update(user, financialLedgerId, body);
+  }
+
+  @Put('/:id/cancellation')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  @ApiNoContentResponse()
+  async delete(
+    @CurrentUser() user: User,
+    @Param('id', ParseIntPipe) financialLedgerId: number,
+  ) {
+    return this.financialLedgerService.delete(user, financialLedgerId);
+  }
+
+  @Put('/:id/restoration')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  @ApiNoContentResponse()
+  async restore(
+    @CurrentUser() user: User,
+    @Param('id', ParseIntPipe) financialLedgerId: number,
+  ) {
+    return this.financialLedgerService.restore(user, financialLedgerId);
   }
 }
