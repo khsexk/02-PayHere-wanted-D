@@ -62,10 +62,6 @@ export class FinancialLedgerRepository extends Repository<FinancialLedger> {
     const groupData = await this.findDayGroup(userId);
     const userData = await this.findUserList(userId);
 
-    if (groupData.length === 0 || userData.length === 0) {
-      throw new UnauthorizedException('가계부 접근 권한이 없습니다.');
-    }
-
     return { groupData, userData };
   }
 

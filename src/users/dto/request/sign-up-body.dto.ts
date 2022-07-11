@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
 
 export class SingUpBodyDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'hello@gmail.com', description: '이메일' })
   @IsNotEmpty()
   @IsEmail()
   email!: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'password123!', description: '비밀번호' })
   @IsNotEmpty()
   @Matches(/^(?=.*[a-zA-Z])((?=.*\d)(?=.*\W)).{8,16}$/, {
     message:

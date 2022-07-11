@@ -190,26 +190,25 @@ describe('FinancialLedgerService', () => {
 
       try {
         // When
-        const result = await repository.getOneMemo(1, user.id);
+        const result = repository.getOneMemo(1, user.id);
         // Then
-        expect(result).resolves.toEqual(UnauthorizedException);
+        expect(result).rejects.toEqual(
+          new NotFoundException('해당하는 가계부 내역을 찾을 수 없습니다.'),
+        );
       } catch (e) {}
     });
   });
 
   describe('readList', () => {
-    it('로그인을 하지않고 리스트를 조회할때 UnauthorizedException 발생하는가', async () => {
+    it('조회한 가계부 리스트가 존재하는가', async () => {
       // Given
       const user = getUser();
       const em = dataSource.createEntityManager();
       await em.save(user);
 
-      try {
-        // When
-        const result = await repository.getAllMemo(user.id);
-        // Then
-        expect(result).toThrowError(UnauthorizedException);
-      } catch (e) {}
+      // When
+      const result = repository.getAllMemo(user.id);
+      expect(result).resolves.toBeDefined();
     });
   });
 });
